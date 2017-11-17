@@ -1,4 +1,4 @@
-package naivebayes.core;
+package general;
 
 import naivebayes.dict.MailDict;
 import org.apache.commons.io.FileUtils;
@@ -11,17 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by wingsby on 2017/8/7.
+ * Created by wingsby on 2017/11/17.
  */
-public class StandardData {
-    static List<StandardData> trainDataSet;
-    static List<StandardData> testDataSet;
-    static List<File>testFiles=new ArrayList<File>();
-
-    public static void gerenateDataSet(){
-        trainDataSet=loadDataSet("train.path");
-        testDataSet=loadDataSet("test.path");
-    }
+public class LoadData {
 
     private static List<StandardData> loadDataSet(String dtype){
         List<StandardData>list=new ArrayList<StandardData>();
@@ -29,7 +21,8 @@ public class StandardData {
         String path=propmap.get(dtype);
         File dir=new File(path);
         Collection<File> files= FileUtils.listFiles(dir,null,true);
-        if(dtype.equals("test.path")&&testFiles.size()==0)testFiles.addAll(files);
+        //todo
+//        if(dtype.equals("test.path")&&testFiles.size()==0)testFiles.addAll(files);
         Map<Character,Integer>dictmap= MailDict.getDictMap();
         for(File file:files){
             StandardData sd=new StandardData();
@@ -42,9 +35,9 @@ public class StandardData {
                 String str=null;
                 while((str=reader.readLine())!=null){
                     for(char ch:str.toCharArray()){
-                       if(dictmap.containsKey(ch)){
-                           dictinx.add(dictmap.get(ch));
-                       }else dictinx.add(999999);
+                        if(dictmap.containsKey(ch)){
+                            dictinx.add(dictmap.get(ch));
+                        }else dictinx.add(999999);
                     }
                 }
                 int[]x=new int[dictinx.size()];
@@ -53,7 +46,7 @@ public class StandardData {
                 }
                 sd.setX(x);
                 sd.setLength(x.length);
-                sd.setYlabel(flag);
+//                sd.setYlabel();
                 list.add(sd);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -65,47 +58,34 @@ public class StandardData {
     }
 
 
-    int length;
-    int [] x=new int[length];
-    boolean ylabel;
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public int[] getX() {
-        return x;
-    }
-
-    public void setX(int[] x) {
-        this.x = x;
-    }
-
-    public boolean isYlabel() {
-        return ylabel;
-    }
-
-    public void setYlabel(boolean ylabel) {
-        this.ylabel = ylabel;
-    }
-
-    public static List<StandardData> getTrainDataSet() {
-        return trainDataSet;
-    }
-
-    public static void setTrainDataSet(List<StandardData> trainDataSet) {
-        StandardData.trainDataSet = trainDataSet;
-    }
-
-    public static List<StandardData> getTestDataSet() {
-        return testDataSet;
-    }
-
-    public static void setTestDataSet(List<StandardData> testDataSet) {
-        StandardData.testDataSet = testDataSet;
+    public static List<StandardData> loadDimissionData(String filename){
+        MLParameter parameter=new MLParameter();
+        List<String>paras=new ArrayList<String>();
+        List<StandardData> dataList=new ArrayList<StandardData>();
+        try {
+            BufferedReader reader=new BufferedReader(new FileReader(filename));
+            String str=reader.readLine();
+            String[]strs=str.split(",");
+            for(String s:strs){
+                paras.add(s);
+            }
+            parameter.setParameters(paras);
+            while((str=reader.readLine())!=null){
+                String[] tmpstrs=str.split(",");
+                StandardData sd=new StandardData();
+                for(int j=0;j<tmpstrs.length;j++){
+                    if(tmpstrs[j].matches("\\d+?")){
+                        sd.setXx(j,Float.valueOf(tmpstrs[j]));
+                    }else {
+                        if(tmpstrs[j].contains("Travel")){
+                            if(tmpstrs[j].contains("Rarely"))
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
